@@ -13,8 +13,7 @@ class Todo(db.Model):
     checked = db.Column(db.Boolean())
     rank = db.Column(db.Integer)
 
-    def __init__(self, id, title, content, dead_line=None, checked=False, rank=None):
-        self.id = id
+    def __init__(self, title, content, dead_line=None, checked=False, rank=None):
         self.title = title
         self.content = content
         self.dead_line = dead_line

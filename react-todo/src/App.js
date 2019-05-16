@@ -3,7 +3,7 @@ import TodoListTemplate from './components/TodoListTemplate';
 import Form from './components/Form';
 import TodoItemList from './components/TodoItemList';
 import UpdateForm from './components/UpdateForm';
-
+import handleResponse from './utils';
 
 class App extends Component{
   constructor(props){
@@ -13,28 +13,22 @@ class App extends Component{
       input_title:'',
       input_content:'',
       todos: [],
-      next_id: 0,
+      idxs: [],
       put_title:'',
       put_content:'',
       put_id:NaN
     }
   }
 
-  componentDidMount(){ // 비동기로 App.state.todos의 데이터를 가져옴
-    const handleResponse = response => {
-      return response.text().then(text => {
-        const data = text && JSON.parse(text)
-        if (!response.ok) {
-          if (response.status === 401) {
-            // auto logout if 401 response returned from api
-            return Promise.reject(response)
-          }
-          const error = (data && data.message) || response.statusText
-          return Promise.reject(error)
-        }
-        return data
-      })
-    };
+  // handleKeyPress = (e) => {
+  //   // 눌려진 키가 Enter 면 handleUpdate 호출
+  //   if(e.key === 'Enter') {
+  //     this.handleUpdate();
+  //   }
+  // }
+
+  componentDidMount = () => { // 비동기로 App.state.todos의 데이터를 가져와서 다시 렌더링
+    console.log('Ajax render')
     fetch("http://0.0.0.0:5000/", {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
@@ -42,43 +36,51 @@ class App extends Component{
       .then(handleResponse)
       .then(response => {return JSON.parse(response);})
       .then(todos => {
-        let next_id = 0;
-        if(todos !== []){
-          for(let obj of todos){
-            if(obj.id > next_id){
-              next_id = obj.id;
-            }
-          }
-          next_id++;
-        };
         this.setState({
           todos:todos,
-          next_id:next_id
-        });
-      });
+        })
+      })
   }
-  
+
   handleChange = (e) => {
     this.setState({
       [e.target.className]: e.target.value 
-    }); 
+    })
+  }
+  
+  addNewTodo = (todo) => {
+    const {todos} = this.state
+    let newTodos = [...todos]
+    newTodos.push(todo)
+    newTodos.sort((x, y) => y.id - x.id) ////
+    this.setState({
+      ...this.state,
+      todos: newTodos
+    })
   }
 
-  handleToggle = (id) => { // TodoItem의 완료여부를 수정
-    const handleResponse = response => {
-      return response.text().then(text => {
-        const data = text && JSON.parse(text)
-        if (!response.ok) {
-          if (response.status === 401) {
-            // auto logout if 401 response returned from api
-            return Promise.reject(response)
-          }
-          const error = (data && data.message) || response.statusText
-          return Promise.reject(error)
-        }
-        return data
+  handleCreate = () => {
+    const {input_title, input_content} = this.state
+    fetch('http://0.0.0.0:5000/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: input_title,
+        content:input_content
       })
-    };
+    })
+      .then(handleResponse)
+      .then(response => {
+        response = JSON.parse(response);
+        this.addNewTodo(response[0])
+      })
+      .catch(error => {
+        console.log(error);
+        })
+  };
+
+  handleToggle = (id) => { // TodoItem의 완료여부를 수정
+    const {todos} = this.state
     fetch('http://0.0.0.0:5000/', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -86,31 +88,24 @@ class App extends Component{
         id: id,
       })
     })
-    .then(handleResponse)
-    .then(response => {
-      console.log(response);
-    })
-    .catch(error => {
-      console.log(error);
-      });
-  window.location.reload();
+      .then(handleResponse)
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+        })
+    let putTodos = [...todos]
+    const putIdx = putTodos.findIndex(todo => {return todo.id === id})
+    putTodos[putIdx].checked = !putTodos[putIdx].checked
+    this.setState({
+      ...this.state,
+      todos:putTodos
+    }) 
   }
 
   handleRemove = (id) => { // TodoItem의 삭제
-    const handleResponse = response => {
-      return response.text().then(text => {
-        const data = text && JSON.parse(text)
-        if (!response.ok) {
-          if (response.status === 401) {
-            // auto logout if 401 response returned from api
-            return Promise.reject(response)
-          }
-          const error = (data && data.message) || response.statusText
-          return Promise.reject(error)
-        }
-        return data
-      })
-    };
+    const {todos} = this.state;
     fetch('http://0.0.0.0:5000/', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -118,42 +113,70 @@ class App extends Component{
         id: id
       })
     })
-    .then(handleResponse)
-    .then(response => {
-      console.log(response);
-    })
-    .catch(error => {
-      console.log(error);
-      });
-  window.location.reload();
+      .then(handleResponse)
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+        });
+    const delTodos = todos.filter(todo => {return todo.id !== id})
+    this.setState({
+      ...this.state,
+      todos:delTodos
+    }) 
   }
 
   handleUpdatemode = (id) => { // mode를 update로 변경해 UpdateForm을 드러낸다
-    const {todos, mode} = this.state;
-    if(mode !== 'update'){
+    const {todos} = this.state;
+    if(this.state.mode !== 'update'){
       this.setState({
         mode:'update',
         put_title: todos.filter(todo => todo.id === id)[0].title,
         put_content: todos.filter(todo => todo.id === id)[0].content,
-        put_id:id
-      });
-    }
-    else{
-      this.setState({
-        mode:'create',
-      });
+        put_id: id
+      })
     }
   }
 
+  handleUpdate = () => {
+    const {put_id, put_title, put_content, todos} = this.state;
+    fetch('http://0.0.0.0:5000/', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id:put_id,
+        title: put_title,
+        content:put_content
+      })
+    })
+      .then(handleResponse)
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+        })
+    let putTodos = [...todos]
+    const putIdx = putTodos.findIndex(todo => {return todo.id === put_id})
+    putTodos[putIdx].title = put_title
+    putTodos[putIdx].content = put_content
+    console.log(putTodos[putIdx])
+    this.setState({
+      ...this.state,
+      todos: putTodos
+    })
+  }
+
   render(){
-    const {input_title, input_content, todos, put_title, put_content, next_id, put_id} = this.state;
+    const {input_title, input_content, todos, put_title, put_content} = this.state;
     const {
       handleChange,
       handleCreate,
       handleToggle,
       handleRemove,
       handleUpdate,
-      handleUpdatemode
+      handleUpdatemode,
     } = this;
 
     return (
@@ -164,7 +187,6 @@ class App extends Component{
             content={input_content}
             onChange={handleChange}
             onCreate={handleCreate}
-            next_id={next_id}
             />)}
         updateForm={(this.state.mode === 'update') && (
           <UpdateForm 
@@ -172,7 +194,6 @@ class App extends Component{
             content={put_content}
             onChange={handleChange}
             onUpdate={handleUpdate}
-            put_id={put_id}
           />)}
       >
         <TodoItemList todos={todos} onToggle={handleToggle} onRemove={handleRemove} onUpdateMode={handleUpdatemode}/>

@@ -23,13 +23,13 @@ db.init_app(app)
 class TodoList(Resource):
     def post(self):
         r_json = request.get_json()
-        todo = Todo.query.filter_by(id=r_json['id']).first()
-        if todo is not None:
-            return 'todo id {} is already exists!'.format(r_json['id'])
+        # del r_json['id']
+        print(r_json)
         new_todo = Todo(**r_json)
         db.session.add(new_todo)
         db.session.commit()
-        return 'create {}'.format(new_todo.__str__())
+        return serializer([new_todo])
+        # return 'create {}'.format(new_todo.__str__())
 
     def _get_todos(self):
         todos = Todo.query.all()
