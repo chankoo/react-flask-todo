@@ -28,7 +28,6 @@ class App extends Component{
   // }
 
   componentDidMount = () => { // 비동기로 App.state.todos의 데이터를 가져와서 다시 렌더링
-    console.log('Ajax render')
     fetch("http://0.0.0.0:5000/", {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
@@ -74,6 +73,12 @@ class App extends Component{
         response = JSON.parse(response);
         this.addNewTodo(response[0])
       })
+      .then(
+        this.setState({
+          input_title: '',
+          input_content:''
+        })
+      )
       .catch(error => {
         console.log(error);
         })
@@ -85,7 +90,7 @@ class App extends Component{
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id: id,
+        id: id
       })
     })
       .then(handleResponse)
@@ -128,13 +133,21 @@ class App extends Component{
   }
 
   handleUpdatemode = (id) => { // mode를 update로 변경해 UpdateForm을 드러낸다
-    const {todos} = this.state;
-    if(this.state.mode !== 'update'){
+    const {mode, todos} = this.state;
+    if(mode !== 'update'){
       this.setState({
         mode:'update',
         put_title: todos.filter(todo => todo.id === id)[0].title,
         put_content: todos.filter(todo => todo.id === id)[0].content,
         put_id: id
+      })
+    }
+    else{
+      this.setState({
+        mode: 'create',
+        put_id: NaN,
+        put_title: '',
+        put_content: ''
       })
     }
   }
@@ -154,6 +167,13 @@ class App extends Component{
       .then(response => {
         console.log(response);
       })
+      .then(
+        this.setState({
+          put_id: NaN, // ??
+          put_title: '',
+          put_content: ''
+        })
+      )
       .catch(error => {
         console.log(error);
         })
@@ -161,10 +181,10 @@ class App extends Component{
     const putIdx = putTodos.findIndex(todo => {return todo.id === put_id})
     putTodos[putIdx].title = put_title
     putTodos[putIdx].content = put_content
-    console.log(putTodos[putIdx])
     this.setState({
       ...this.state,
-      todos: putTodos
+      todos: putTodos,
+      mode: 'create'
     })
   }
 
