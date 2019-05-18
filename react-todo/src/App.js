@@ -45,8 +45,11 @@ class App extends Component{
       .then(util.handleResponse)
       .then(response => {return JSON.parse(response)})
       .then(todos => {
+        let idxs = [...this.state.idxs]
+        for(const todo of todos){idxs.push(todo.id)}
         this.setState({
-          todos:todos,
+          todos: todos,
+          idxs: idxs
         })
       })
   }
@@ -86,15 +89,14 @@ class App extends Component{
   }
   
   addNewTodo = (todo) => {
-    const {todos} = this.state
-    let newTodos = [...todos]
-    newTodos.push(todo)
-    newTodos.sort((x, y) => y.deadLine - x.deadLine)
+    const {todos, idxs} = this.state
+    
     this.setState({
       ...this.state,
-      todos: newTodos,
-
+      todos: todos.concat([todo]),
+      idxs: idxs.concat([todo.id])
     })
+    console.log(this.state.idxs)
   }
 
   handleCreate = () => {
@@ -154,7 +156,7 @@ class App extends Component{
   }
 
   handleRemove = (id) => { // TodoItem의 삭제
-    const {todos} = this.state;
+    const {todos, idxs} = this.state;
     fetch('http://0.0.0.0:5000/', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -170,9 +172,12 @@ class App extends Component{
         console.log(error);
         });
     const delTodos = todos.filter(todo => {return todo.id !== id})
+    const delIdxs = idxs.filter(idx => {return idx !== id})
+
     this.setState({
       ...this.state,
-      todos:delTodos
+      todos: delTodos,
+      idxs: delIdxs
     }) 
   }
 
@@ -242,7 +247,26 @@ class App extends Component{
     
   }
 
-  
+  handleIdxChange = (id, dir) =>{
+    console.log('handleIdxChange')
+    let newIdxs = [...this.state.idxs]
+    const idxOfMove = newIdxs.findIndex(idx => {return idx===id})
+    try{
+      const idxOfMoved = (dir==='up' ? idxOfMove-1 : idxOfMove+1)
+      const temp = newIdxs[idxOfMoved]
+      newIdxs[idxOfMoved] = newIdxs[idxOfMove]
+      newIdxs[idxOfMove] = temp
+      const newTodos = [...this.state.todos].sort((a,b)=> newIdxs.indexOf(a.id) - newIdxs.indexOf(b.id) )
+      this.setState({
+        idxs: newIdxs,
+        todos: newTodos
+      })
+    }
+    catch (e){
+      console.log(e)
+    }
+    console.log(newIdxs)
+  }
 
   render(){
     const {input_title, input_content, deadLineCheck, todos, put_title, put_content, put_deadLine
@@ -256,7 +280,8 @@ class App extends Component{
       handleUpdate,
       handleUpdatemode,
       deadLineCallback,
-      handleDeadLineOn
+      handleDeadLineOn,
+      handleIdxChange,
     } = this;
     
     return (
@@ -285,7 +310,7 @@ class App extends Component{
           />)}
       setMode={handleSetMode}
       >
-        <TodoItemList todos={todos} onToggle={handleToggle} onRemove={handleRemove} onUpdateMode={handleUpdatemode}/>
+        <TodoItemList todos={todos} onToggle={handleToggle} onRemove={handleRemove} onUpdateMode={handleUpdatemode} onIdxChange={handleIdxChange}/>
       </TodoListTemplate>
     );
   }

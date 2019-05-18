@@ -6,12 +6,13 @@ import {Icon} from 'antd'
 
 class TodoItem extends Component {
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return this.props !== nextProps;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   return this.props !== nextProps;
+  // }
+
   
   render() {
-    const { title, content, checked, id, deadLine, onToggle, onRemove, onUpdateMode } = this.props;
+    const { title, content, checked, id, deadLine, onToggle, onRemove, onUpdateMode, onIdxChange } = this.props;
     return (
       <div className="todo-item" onClick={() => onToggle(id)}>
         <div className="remove" onClick={(e) => {
@@ -35,8 +36,14 @@ class TodoItem extends Component {
               수정            
             </div>
             <div>
-              <div><Icon type="caret-up" /></div>
-              <div><Icon type="caret-down" /></div>
+              <div><Icon type="caret-up" onClick={(e) => {
+                e.stopPropagation()
+                onIdxChange(id, 'up')
+              }}/></div>
+              <div><Icon type="caret-down" onClick={(e)=>{
+                e.stopPropagation()
+                onIdxChange(id, 'down')
+              }}/></div>
             </div>
           </div>
         }
