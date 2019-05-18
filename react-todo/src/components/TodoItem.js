@@ -3,6 +3,7 @@ import * as util from './../utils'
 import './TodoItem.css'
 import {Icon} from 'antd'
 
+
 class TodoItem extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -11,7 +12,6 @@ class TodoItem extends Component {
   
   render() {
     const { title, content, checked, id, deadLine, onToggle, onRemove, onUpdateMode } = this.props;
-    console.log('!!', util.getNowStrDate())
     return (
       <div className="todo-item" onClick={() => onToggle(id)}>
         <div className="remove" onClick={(e) => {
@@ -23,15 +23,22 @@ class TodoItem extends Component {
           <div>{content}</div>
           <div>마감: {deadLine}</div>
         </div>
+        
         {(deadLine < util.getNowStrDate()) && <div><Icon type="hourglass" /></div>}
         {
-          !checked && (
-          <div className="update-button" onClick={(e) => {
-            e.stopPropagation();
-            onUpdateMode(id)}
-          }>
-            수정
-          </div>)
+          !checked && 
+          <div>  
+            <div className="update-button" onClick={(e) => {
+              e.stopPropagation();
+              onUpdateMode(id)}
+            }>
+              수정            
+            </div>
+            <div>
+              <div><Icon type="caret-up" /></div>
+              <div><Icon type="caret-down" /></div>
+            </div>
+          </div>
         }
         {
           checked && (<div className="check-mark">&#x2713;</div>) //checked True일때 check-mark 보여줌

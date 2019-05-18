@@ -89,7 +89,7 @@ class App extends Component{
     const {todos} = this.state
     let newTodos = [...todos]
     newTodos.push(todo)
-    newTodos.sort((x, y) => y.id - x.id) ////
+    newTodos.sort((x, y) => y.deadLine - x.deadLine)
     this.setState({
       ...this.state,
       todos: newTodos,
