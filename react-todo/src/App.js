@@ -3,37 +3,47 @@ import TodoListTemplate from './components/TodoListTemplate';
 import Form from './components/Form';
 import TodoItemList from './components/TodoItemList';
 import UpdateForm from './components/UpdateForm';
-import handleResponse from './utils';
+import * as util from './utils';
 
 class App extends Component{
   constructor(props){
     super(props);
     this.state = {
-      mode: 'creat',
+      mode: 'read',
       input_title:'',
       input_content:'',
+      deadLineCheck: false,
+      input_deadLine: null,
       todos: [],
       idxs: [],
       put_title:'',
       put_content:'',
-      put_id:NaN
+      put_id:null,
+      put_deadLineCheck: false,
+      put_deadLine: null,
     }
   }
 
-  // handleKeyPress = (e) => {
-  //   // 눌려진 키가 Enter 면 handleUpdate 호출
-  //   if(e.key === 'Enter') {
-  //     this.handleUpdate();
-  //   }
-  // }
+  handleSetMode = () =>{
+    const {mode} = this.state
+    if(mode === 'create'){
+      util.createFormReset(this)
+    }
+    else{
+      util.updateFormReset(this)
+      this.setState({
+        mode: 'create'
+      })
+    }
+  }
 
   componentDidMount = () => { // 비동기로 App.state.todos의 데이터를 가져와서 다시 렌더링
     fetch("http://0.0.0.0:5000/", {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     })
-      .then(handleResponse)
-      .then(response => {return JSON.parse(response);})
+      .then(util.handleResponse)
+      .then(response => {return JSON.parse(response)})
       .then(todos => {
         this.setState({
           todos:todos,
@@ -41,10 +51,38 @@ class App extends Component{
       })
   }
 
-  handleChange = (e) => {
+  handleFormChange = (e) => {
     this.setState({
       [e.target.className]: e.target.value 
     })
+  }
+
+  handleDeadLineOn = (fromWhere) =>{
+    const {deadLineCheck, put_deadLineCheck} = this.state
+
+    if(fromWhere==='Form'){
+      this.setState({
+        deadLineCheck: !deadLineCheck,
+      })
+    }
+    else{
+      this.setState({
+        put_deadLineCheck: !put_deadLineCheck,
+      })
+    }
+  }
+
+  deadLineCallback = (deadLine, fromWhere) =>{
+    if(fromWhere==='Form'){
+      this.setState({
+        input_deadLine: deadLine,
+      })
+    }
+    else{
+      this.setState({
+        put_deadLine: deadLine,
+      })
+    }
   }
   
   addNewTodo = (todo) => {
@@ -54,35 +92,41 @@ class App extends Component{
     newTodos.sort((x, y) => y.id - x.id) ////
     this.setState({
       ...this.state,
-      todos: newTodos
+      todos: newTodos,
+
     })
   }
 
   handleCreate = () => {
-    const {input_title, input_content} = this.state
+    const {input_title, input_content, input_deadLine, deadLineCheck} = this.state
+    // 마감 기한 오류 검사
+    let confirm_deadLine = input_deadLine
+    if(!deadLineCheck){confirm_deadLine = null}
+    else{confirm_deadLine = new Date()}
+
     fetch('http://0.0.0.0:5000/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: input_title,
-        content:input_content
+        content: input_content,
+        has_deadLine: deadLineCheck,
+        deadLine: confirm_deadLine
       })
     })
-      .then(handleResponse)
+      .then(util.handleResponse)
       .then(response => {
-        response = JSON.parse(response);
+        response = JSON.parse(response)
         this.addNewTodo(response[0])
       })
-      .then(
-        this.setState({
-          input_title: '',
-          input_content:''
-        })
-      )
+      .then(()=>{ // 전송이 끝나면 입력 폼을 초기화한다
+        util.createFormReset(this)
+      })
       .catch(error => {
-        console.log(error);
+        alert(error)
+        console.log(error)
         })
-  };
+  }
 
   handleToggle = (id) => { // TodoItem의 완료여부를 수정
     const {todos} = this.state
@@ -93,7 +137,7 @@ class App extends Component{
         id: id
       })
     })
-      .then(handleResponse)
+      .then(util.handleResponse)
       .then(response => {
         console.log(response);
       })
@@ -118,7 +162,7 @@ class App extends Component{
         id: id
       })
     })
-      .then(handleResponse)
+      .then(util.handleResponse)
       .then(response => {
         console.log(response);
       })
@@ -133,88 +177,113 @@ class App extends Component{
   }
 
   handleUpdatemode = (id) => { // mode를 update로 변경해 UpdateForm을 드러낸다
-    const {mode, todos} = this.state;
+    const {mode, todos} = this.state
+    const put_todo = todos.filter(todo => todo.id === id)[0]
+
     if(mode !== 'update'){
       this.setState({
         mode:'update',
-        put_title: todos.filter(todo => todo.id === id)[0].title,
-        put_content: todos.filter(todo => todo.id === id)[0].content,
-        put_id: id
+        put_title: put_todo.title,
+        put_content: put_todo.content,
+        put_id: id,
+        put_deadLine: (put_todo.deadLine==='None' ? null : put_todo.deadLine),
+        put_deadLineCheck: put_todo.deadLine!=='None'
       })
     }
     else{
-      this.setState({
-        mode: 'create',
-        put_id: NaN,
-        put_title: '',
-        put_content: ''
-      })
+      util.updateFormReset(this)
     }
   }
 
+  updatePutTodo = (todo, put_id) => {
+    const {todos} = this.state
+    let putTodos = [...todos]
+    const putIdx = putTodos.findIndex(todo => {return todo.id === put_id})
+    putTodos[putIdx].title = todo.title
+    putTodos[putIdx].content = todo.content
+    if(todo.deadLine){
+      putTodos[putIdx].deadLine = todo.deadLine
+    }
+    this.setState({
+      ...this.state,
+      todos: putTodos,
+      mode: 'read'
+    })
+  }
+
   handleUpdate = () => {
-    const {put_id, put_title, put_content, todos} = this.state;
+    const {put_id, put_title, put_content, put_deadLine, put_deadLineCheck} = this.state
+    // 마감기한 오류 검사
+    let confirm_deadLine = put_deadLine
+    if(!put_deadLineCheck){confirm_deadLine = null}
+    else{confirm_deadLine = (put_deadLine === null ? new Date() : put_deadLine)}
+    
     fetch('http://0.0.0.0:5000/', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id:put_id,
+        id: put_id,
         title: put_title,
-        content:put_content
+        content: put_content,
+        has_deadLine: put_deadLineCheck,
+        deadLine: confirm_deadLine
       })
     })
-      .then(handleResponse)
+      .then(util.handleResponse)
       .then(response => {
-        console.log(response);
+        response = JSON.parse(response)
+        this.updatePutTodo(response[0], put_id)
       })
-      .then(
-        this.setState({
-          put_id: NaN, // ??
-          put_title: '',
-          put_content: ''
-        })
-      )
       .catch(error => {
         console.log(error);
         })
-    let putTodos = [...todos]
-    const putIdx = putTodos.findIndex(todo => {return todo.id === put_id})
-    putTodos[putIdx].title = put_title
-    putTodos[putIdx].content = put_content
-    this.setState({
-      ...this.state,
-      todos: putTodos,
-      mode: 'create'
-    })
+    
+    console.log("!handleUpdate",put_deadLine)
+    
   }
 
+  
+
   render(){
-    const {input_title, input_content, todos, put_title, put_content} = this.state;
+    const {input_title, input_content, deadLineCheck, todos, put_title, put_content, put_deadLine
+      ,put_deadLineCheck} = this.state;
     const {
-      handleChange,
+      handleSetMode,
+      handleFormChange,
       handleCreate,
       handleToggle,
       handleRemove,
       handleUpdate,
       handleUpdatemode,
+      deadLineCallback,
+      handleDeadLineOn
     } = this;
-
+    
     return (
       <TodoListTemplate 
-        form={(
+        form={(this.state.mode === 'create') && (
           <Form
             title={input_title}
             content={input_content}
-            onChange={handleChange}
+            onChange={handleFormChange}
             onCreate={handleCreate}
+            deadLineCheck={deadLineCheck}
+            onDeadline={handleDeadLineOn}
+            callbackFromApp={deadLineCallback}
             />)}
         updateForm={(this.state.mode === 'update') && (
           <UpdateForm 
             title={put_title}
             content={put_content}
-            onChange={handleChange}
+            onChange={handleFormChange}
             onUpdate={handleUpdate}
+            put_deadLine={put_deadLine}
+            put_deadLineCheck={put_deadLineCheck}
+            onDeadline={handleDeadLineOn}
+            callbackFromApp={deadLineCallback}
+        
           />)}
+      setMode={handleSetMode}
       >
         <TodoItemList todos={todos} onToggle={handleToggle} onRemove={handleRemove} onUpdateMode={handleUpdatemode}/>
       </TodoListTemplate>

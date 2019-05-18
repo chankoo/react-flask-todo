@@ -1,12 +1,13 @@
+import os
 from flask import Flask
 from flask_restful import Api
-import os
 from flask_cors import CORS
-from models import db, Todo
-
 from flask import request
 from flask_restful import Resource
+from models import db, Todo
 from utils import serializer
+
+from datetime import datetime
 
 basedir = os.path.dirname(os.path.abspath(__file__))
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' +os.path.join(basedir, 'app.db')
@@ -23,7 +24,10 @@ db.init_app(app)
 class TodoList(Resource):
     def post(self):
         r_json = request.get_json()
+        print(r_json)
         new_todo = Todo(**r_json)
+        if r_json['has_deadLine']:
+            new_todo.set_deadLine(datetime.strptime(new_todo.get_deadLine()[:10], '%Y-%m-%d'))
         db.session.add(new_todo)
         db.session.commit()
         return serializer([new_todo])
@@ -39,17 +43,26 @@ class TodoList(Resource):
     def put(self):
         r_json = request.get_json()
         put_todo = Todo.query.filter_by(id=r_json['id']).first()
+        # 수정할 아이템이 없는 경우
         if put_todo is None:
             return 'todo id {} does not exist'.format(r_json['id'])
-        # 반영 버튼으로 제목과 내용을 수정한 경우
+
+        # 반영 버튼으로 제목과 내용 (혹은 마감기한)을 수정한 경우
         if 'title' in r_json and 'content' in r_json:
+            print(r_json)
             put_todo.title = r_json['title']
             put_todo.content = r_json['content']
+            if r_json['has_deadLine']:
+                put_todo.set_deadLine(datetime.strptime(r_json['deadLine'][:10], '%Y-%m-%d'))
+            else:
+                put_todo.set_deadLine(None)
+
         # TodoItem의 완료 여부만 변경한 경우
         else:
+            print(r_json)
             put_todo.checked = not put_todo.checked
         db.session.commit()
-        return 'update successfully'
+        return serializer([put_todo])
 
     def delete(self):
         r_json = request.get_json()

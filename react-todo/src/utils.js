@@ -1,5 +1,3 @@
-
-
 const handleResponse = response => {
     return response.text().then(text => {
         const data = text && JSON.parse(text)
@@ -11,8 +9,39 @@ const handleResponse = response => {
         const error = (data && data.message) || response.statusText
         return Promise.reject(error)
         }
+    console.log('from handleResponse',typeof(data), data)
     return data
     })
 }
 
-export default handleResponse;
+const createFormReset = (_this) =>{
+  _this.setState({
+    mode:'read',
+    input_title:'',
+    input_content:'',
+    deadLineCheck: false,
+    input_deadLine: null
+  })
+}
+
+const updateFormReset = (_this) =>{
+  _this.setState({
+    mode:'read',
+    put_title:'',
+    put_content:'',
+    put_deadLineCheck: false,
+    put_deadLine: null
+  })
+}
+
+const getNowStrDate = () =>{
+  const now = new Date()
+  let month = (now.getMonth()+1)
+  let date = now.getDate()
+  month = (month < 10 ? '0'+month : month.toString())
+  date = (date < 10 ? '0'+date : date.toString())
+
+  return (now.getFullYear()+ '-' + month +'-' + date)
+}
+
+export {handleResponse, createFormReset, updateFormReset, getNowStrDate}

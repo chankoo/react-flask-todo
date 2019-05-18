@@ -1,5 +1,7 @@
-import React, { Component } from 'react';
-import './TodoItem.css';
+import React, { Component } from 'react'
+import * as util from './../utils'
+import './TodoItem.css'
+import {Icon} from 'antd'
 
 class TodoItem extends Component {
 
@@ -8,7 +10,8 @@ class TodoItem extends Component {
   }
   
   render() {
-    const { title, content, checked, id, onToggle, onRemove, onUpdateMode } = this.props;
+    const { title, content, checked, id, deadLine, onToggle, onRemove, onUpdateMode } = this.props;
+    console.log('!!', util.getNowStrDate())
     return (
       <div className="todo-item" onClick={() => onToggle(id)}>
         <div className="remove" onClick={(e) => {
@@ -18,7 +21,9 @@ class TodoItem extends Component {
         <div className={`todo-text ${ checked ? ' checked' : '' }`}>
           <div>{title}</div>
           <div>{content}</div>
+          <div>마감: {deadLine}</div>
         </div>
+        {(deadLine < util.getNowStrDate()) && <div><Icon type="hourglass" /></div>}
         {
           !checked && (
           <div className="update-button" onClick={(e) => {
