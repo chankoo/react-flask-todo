@@ -1,3 +1,11 @@
+.login_form{
+  float: right;
+}
+
+.join_form{
+  margin: auto;
+}
+
 .user_status{
     font-size: 1.25rem;
     outline: none;

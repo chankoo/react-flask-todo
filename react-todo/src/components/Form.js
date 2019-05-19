@@ -17,6 +17,7 @@ class Form extends Component{
     this.setState({
         deadLine: date
     })
+    console.log('handleDateChange',date)
     this.props.callbackFromTodoList(date, 'Form')
   }
 
@@ -35,7 +36,7 @@ class Form extends Component{
 
   render(){
     const {title, content, onChange, deadLineCheck, } = this.props;
-    
+    console.log()
     return (
       <div className="form">
         <input className="input_title" placeholder="title" value={title} onChange={onChange}/>

@@ -1,0 +1,32 @@
+.header {
+    background: #b2b4bb;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.header-table{
+    float: left;
+    padding: 1rem;
+    font-size: 1.5rem;
+}
+
+.header-table-item{
+    height: 70%;
+    width: 150px;
+    font-size: 100;
+    color: #22b8cf;
+    cursor: pointer;
+}
+
+.login{
+    float: right;
+    display: flex;
+}
+
+.user_status{
+    font-size: 1.25rem;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #c5f6fa;
+}

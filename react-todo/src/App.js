@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Header from './components/Header'
 import Join from './routes/Join';
 import TodoList from './routes/TodoList';
-import Login from './routes/Login';
 
 
 class App extends Component {
@@ -32,8 +31,10 @@ class App extends Component {
     
     return (
       <Router>
-        <div>
-          <Header />
+          <Header userName={userName} 
+                  has_token={has_token} 
+                  token={token} 
+                  callbackFromApp={callbackFromApp} />
           <Switch>
             <Route 
               exact path="/" 
@@ -45,7 +46,7 @@ class App extends Component {
                 />}
             />
             <Route path="/join" component={Join}/>
-            <Route 
+            {/* <Route 
               path="/login" 
               render={props=>
                 <Login 
@@ -54,9 +55,8 @@ class App extends Component {
                   token={token} 
                   callbackFromApp={callbackFromApp}
                 />}
-            />
+            /> */}
           </Switch>
-        </div>
       </Router>
     )
   }

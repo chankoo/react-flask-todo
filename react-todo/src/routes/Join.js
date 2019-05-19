@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import * as util from '../utils';
-
+import './Join.css';
 
 class Join extends Component{
     constructor(props){
@@ -36,11 +36,11 @@ class Join extends Component{
                 input_userName:'',
                 input_pwd:''
             })
-            alert("가입되었습니다. 로그인하러 갑시다")
+            alert("가입되었습니다")
         })
         // .then(()=>{<Redirect to="/"/>})
         .catch(error => {
-            alert("죄송하지만 실패했습니다")
+            alert("실패했습니다")
             console.log(error)
         })
     }
@@ -57,9 +57,7 @@ class Join extends Component{
             <div className="join_form" onKeyPress={handleKeyPress}>
                 <input className="input_userName" placeholder="user_name" onChange={handleChange}/>
                 <input className="input_pwd" placeholder="password" onChange={handleChange} />
-                <div type="button" className="join-button" onClick={handleJoin}>
-                Join
-                </div>
+                <div type="button" className="join-button" onClick={handleJoin}>Join</div>
             </div>
         )
     }
