@@ -12,7 +12,7 @@ class TodoItem extends Component {
 
   
   render() {
-    const { title, content, checked, id, deadLine, onToggle, onRemove, onUpdateMode, onIdxChange } = this.props;
+    const { title, content, checked, id, deadLine, onToggle, onRemove, onUpdateMode, onPriorChange } = this.props;
     return (
       <div className="todo-item" onClick={() => onToggle(id)}>
         <div className="remove" onClick={(e) => {
@@ -38,11 +38,11 @@ class TodoItem extends Component {
             <div>
               <div><Icon type="caret-up" onClick={(e) => {
                 e.stopPropagation()
-                onIdxChange(id, 'up')
+                onPriorChange(id, 'up')
               }}/></div>
               <div><Icon type="caret-down" onClick={(e)=>{
                 e.stopPropagation()
-                onIdxChange(id, 'down')
+                onPriorChange(id, 'down')
               }}/></div>
             </div>
           </div>
