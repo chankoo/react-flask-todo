@@ -17,7 +17,7 @@ class  UpdateForm extends Component{
     this.setState({
         deadLine: date
     })
-    this.props.callbackFromApp(date, 'UpdateForm')
+    this.props.callbackFromTodoList(date, 'UpdateForm')
   }
 
   // props로 받은 onCreate를 부르고, 입력 폼의 deadLine을 초기화한다

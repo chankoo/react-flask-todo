@@ -3,7 +3,7 @@ from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
 from models import db
-from api import Todos, Users, Login #, Join, token_required
+from api import Todos, Users, Auth #, Join, token_required
 
 basedir = os.path.dirname(os.path.abspath(__file__))
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
@@ -17,11 +17,11 @@ cors = CORS(app)
 api = Api(app)
 db.init_app(app)
 
-api.add_resource(Users
-                 , '/users'
-                 , '/users/<string:id>'
-                 , '/users/join'
-                 )
+api.add_resource(Users,
+                 '/users/')
+                 # , '/users/<string:id>'
+                 # , '/users/join'
+                 # )
 
 # user_view = Users.as_view('users')
 # app.add_url_rule('/users/', view_func=user_view, methods=['GET', 'POST'])
@@ -35,7 +35,7 @@ api.add_resource(Users
 #                  )
 api.add_resource(Todos,'/')
 
-api.add_resource(Login, '/login')
+api.add_resource(Auth, '/login/')
 # api.add_resource(Join, '/join')
 
 if __name__ == '__main__':

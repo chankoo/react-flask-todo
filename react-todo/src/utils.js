@@ -1,5 +1,7 @@
 const handleResponse = response => {
+    console.log('from handleResponse',typeof(response), response)
     return response.text().then(text => {
+        console.log(text)
         const data = text && JSON.parse(text)
         if (!response.ok) {
         if (response.status === 401) {

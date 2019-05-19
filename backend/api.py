@@ -16,19 +16,22 @@ def token_required(f):
         token = None
 
         # request header에 토큰이 있으면 진행
-        if 'x-accesss-token' in request.headers:
-            token = request.headers['x-accesss-token']
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization']
 
         if not token:
-            return make_response('Token is missing', 401)
+            print('if not token')
+            return make_response('{"msg":"Token is missing"}', 401)
 
         try:
             data = jwt.decode(token, 'chankoo')  # decoded with secret key
-            current_user = User.query.filter_by(public_id=data['public_id']).first()
+            # current_user = User.query.filter_by(public_id=data['public_id']).first()
         except:
-            return make_response('Token is invalid', 401)
+            return make_response('{"msg":"Token is invalid"}', 401)
 
-        return f(current_user, *args, **kwargs)  # user 오브젝트를 route에 넘겨주기위해 return
+        return f(
+            # current_user,
+            *args, **kwargs)  # user 오브젝트를 route에 넘겨주기위해 return
 
     return decorated
 
@@ -70,9 +73,6 @@ class Users(Resource):
         db.session.commit()
         return serializer([new_user])
 
-    # def put(self):
-    #     return ''
-
     def delete(self, user_id, current_user):
         data = request.get_json()
         print(data)
@@ -86,9 +86,8 @@ class Users(Resource):
 
 
 class Todos(Resource):
-    # method_decorators = {
-    #     'get': [token_required],
-    # }
+    method_decorators = dict.fromkeys(['get', 'post', 'put', 'delete'], [token_required])
+
     MAX_PRIORITY = 987654321
     MIN_PRIORITY = 0
 
@@ -171,6 +170,7 @@ class Todos(Resource):
             put_todo.priority = find_todo_priority
             try:
                 Todo.query.filter_by(id=find_todo_id).first().priority = temp_priority
+
                 db.session.commit()
             except:
                 pass
@@ -190,34 +190,44 @@ class Todos(Resource):
         return 'deleted successfully'
 
 
-class Login(Resource):
-    def get(self): #  probably post?
-        auth = request.authorization
-        if not auth or not auth.username or not auth.password:
-            return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+class Auth(Resource):
+    def post(self):
+        """
+            post login info(user name, password)
+            return authentication token
+        """
 
-        print(auth.username)
-        user = User.query.filter_by(name=auth.username).first()
+        data = request.get_json()
+        print(data)
+
+        # user = User.query.filter_by(name=auth.username).first()
+        #
+        # auth = request.authorization
+        # if not auth or not auth.username or not auth.password:
+        #     return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+        # print(auth)
+        #
+        # user = User.query.filter_by(name=auth.username).first()
+
+        user = User.query.filter_by(name=data['name']).first()
+
         if not user:
             return make_response('Could not verify', 401)
 
-        if check_password_hash(user.password, auth.password):
+        if check_password_hash(user.password, data['password']):
             token = jwt.encode({
                 # 'public_id': user.public_id,
                 'id': user.id,
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=15)  # 30 minutes to expire
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)  # 30 minutes to expire
             }
             ,'chankoo'
             )
 
-            return json.dumps({'token': token.decode('UTF-8')})
+            return json.dumps({
+                'token': token.decode('UTF-8'),
+                'name': user.name
+                               })
 
         return make_response('Could not verify', 401)
 
-
-# class Join(Resource):
-#     def post(self):
-#         data = request.get_json()
-#         if not data['name'] or not data['password']:
-#             return make_response('Could not join', 401)
 
