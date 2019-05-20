@@ -19,7 +19,7 @@ class Join extends Component{
     }
 
     handleJoin=()=>{
-        console.log("handleJoin")
+        // console.log("handleJoin")
         const {input_userName, input_pwd} = this.state
         fetch('http://0.0.0.0:5001/users/', {
             method: 'POST',

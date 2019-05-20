@@ -40,7 +40,7 @@ class TodoList extends Component{
   }
 
   componentDidMount = () => { // 비동기로 TodoList.state.todos의 데이터를 가져와서 다시 렌더링
-    console.log('componentDidMount token:',this.props.token)
+    // console.log('componentDidMount token:',this.props.token)
     if(this.props.token===null){return}
     fetch("http://0.0.0.0:5001/todos", {
       method: 'GET',
@@ -260,12 +260,12 @@ class TodoList extends Component{
         console.log(error);
         })
     
-    console.log("!handleUpdate",put_deadLine)
+    // console.log("!handleUpdate",put_deadLine)
     
   }
 
   handlePriorChange=(id,dir) => {
-    console.log('handlePriorChange')
+    // console.log('handlePriorChange')
     fetch('http://0.0.0.0:5001/todos', {
       method: 'PUT',
       headers: { 

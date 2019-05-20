@@ -4,7 +4,6 @@ import './Header.css';
 import * as util from '../utils';
 
 
-
 class Header extends Component {
     constructor(props){
         super(props)
@@ -57,7 +56,7 @@ class Header extends Component {
         )
         .catch(error => {
             alert("로그인에 실패했습니다")
-            console.log(error)
+            // console.log(error)
         })
     }
 

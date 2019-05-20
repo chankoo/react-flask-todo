@@ -25,7 +25,7 @@ class App extends Component {
   }
 
   render() {
-    console.log('App render',this.state.token)
+    // console.log('App render',this.state.token)
     const {token, userName, has_token} = this.state
     const {callbackFromApp} = this
     

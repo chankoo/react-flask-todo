@@ -39,9 +39,9 @@ class  UpdateForm extends Component{
 
     return (
       <div className="updateForm">
-        <input className="put_title" value={title} onChange={onChange}/>
+        <input className="put_title" placeholder="title" value={title} onChange={onChange}/>
 
-        <textarea className="put_content" value={content} onChange={onChange} />
+        <textarea className="put_content" placeholder="content" value={content} onChange={onChange} />
 
         <div>
           {put_deadLineCheck &&
