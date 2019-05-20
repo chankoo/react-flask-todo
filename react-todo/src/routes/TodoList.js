@@ -51,7 +51,7 @@ class TodoList extends Component{
     })
       .then(util.handleResponse)
       .then(response => {
-        console.log('componentDidMount response:',response)
+        // console.log('componentDidMount response:',response)
         return JSON.parse(response)})
       .then(todos => {
         this.setState({
@@ -152,7 +152,7 @@ class TodoList extends Component{
     })
       .then(util.handleResponse)
       .then(response => {
-        console.log(response);
+        // console.log(response);
       })
       .catch(error => {
         console.log(error);
@@ -180,9 +180,6 @@ class TodoList extends Component{
       })
     })
       .then(util.handleResponse)
-      .then(response => {
-        console.log(response)
-      })
       .catch(error => {
         console.log(error)
         })
