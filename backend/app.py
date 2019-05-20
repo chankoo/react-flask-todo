@@ -18,7 +18,7 @@ cors = CORS(app)
 api = Api(app)
 db.init_app(app)
 
-# api.add_resource(Users, '/users/')
+api.add_resource(Users, '/users/')
 
 api.add_resource(Todos, '/todos')
 
