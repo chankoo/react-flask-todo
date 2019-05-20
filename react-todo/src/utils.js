@@ -1,7 +1,6 @@
 const handleResponse = response => {
     console.log('from handleResponse',typeof(response), response)
     return response.text().then(text => {
-        console.log(text)
         const data = text && JSON.parse(text)
         if (!response.ok) {
         if (response.status === 401) {
@@ -11,7 +10,6 @@ const handleResponse = response => {
         const error = (data && data.message) || response.statusText
         return Promise.reject(error)
         }
-    console.log('from handleResponse',typeof(data), data)
     return data
     })
 }

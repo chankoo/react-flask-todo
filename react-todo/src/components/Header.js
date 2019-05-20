@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import './Header.css';
 import * as util from '../utils';
 
@@ -24,7 +24,7 @@ class Header extends Component {
     }
     
     handleLogin=()=>{
-        const {input_userName, input_pwd, token ,userName, has_token} = this.state
+        const {input_userName, input_pwd} = this.state
         const {callbackFromApp} = this.props
 
         fetch('http://0.0.0.0:5000/login/', {
@@ -50,9 +50,11 @@ class Header extends Component {
                 input_userName:'',
                 input_pwd:''
             })
-            alert("로그인되었습니다")
         })
-        // .then(()=>{<Redirect to="/"/>})
+        .then(()=>{
+            // ()=>{<Redirect to="/" push/>}
+        }
+        )
         .catch(error => {
             alert("로그인에 실패했습니다")
             console.log(error)
@@ -75,44 +77,36 @@ class Header extends Component {
         
         return (
             <div className="header">
-                <table className="header-table">
-                    <nav className="header-table-item">
+                <div className="header-table">
+                    <div className="header-table-item">
                         <Link  to="/join">회원가입</Link>
-                    </nav>
-                    <nav className="header-table-item">
-                        <Link to="/">Todos</Link>
-                    </nav>
-                    {/* <nav className="header-table-item">
-                        <Link to="/login">로그인</Link>
-                    </nav> */}
-                </table>
+                    </div>
+                    <div className="header-table-item">
+                        <Link to="/todos">Todos</Link>
+                    </div>
+                </div>
                 <section className="login">
-                        {!has_token
-                        &&
+                    {!has_token 
+                    &&
+                    <div className="logouted">
                         <input className="input_userName" placeholder="user_name" onChange={handleChange}/>
-                        }
-                        {!has_token
-                        &&
                         <input className="input_pwd" placeholder="password" onChange={handleChange}/>
-                        }
-                        {!has_token 
-                        && 
                         <div type="button" className="login-button" onClick={handleLogin}>
                             Login
                         </div>
-                        }
-                        {has_token 
-                        && 
+                    </div>
+                    }
+                    {has_token 
+                    && 
+                    <div className="logged">
                         <div type="button" className="logout-button" onClick={handleLogout}>
                             Logout
                         </div>
-                        }
-                        {has_token 
-                        && 
                         <div type="button" className="user_status" >
                             {userName} 님
                         </div>
-                        }
+                    </div>
+                    }
                 </section>
             </div>
             

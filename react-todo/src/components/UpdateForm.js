@@ -44,7 +44,7 @@ class  UpdateForm extends Component{
         <textarea className="put_content" value={content} onChange={onChange} />
 
         <div>
-          {(put_deadLineCheck) &&
+          {put_deadLineCheck &&
             <DatePicker
               selected={this.state.deadLine}
               onChange={this.handleDateChange}

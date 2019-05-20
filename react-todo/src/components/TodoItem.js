@@ -5,11 +5,9 @@ import {Icon} from 'antd'
 
 
 class TodoItem extends Component {
-
   // shouldComponentUpdate(nextProps, nextState) {
   //   return this.props !== nextProps;
   // }
-
   
   render() {
     const { title, content, checked, id, deadLine, onToggle, onRemove, onUpdateMode, onPriorChange } = this.props;
@@ -25,7 +23,7 @@ class TodoItem extends Component {
           <div>마감: {deadLine}</div>
         </div>
         
-        {(deadLine < util.getNowStrDate()) && <div><Icon type="hourglass" /></div>}
+        {(deadLine < util.getNowStrDate()) && <div className="hourglass"><Icon className="hourglass-icon" type="hourglass" /></div>}
         {
           !checked && 
           <div>  
@@ -35,12 +33,12 @@ class TodoItem extends Component {
             }>
               수정            
             </div>
-            <div>
-              <div><Icon type="caret-up" onClick={(e) => {
+            <div className="priority-handler">
+              <div><Icon className="prior_up" type="caret-up" onClick={(e) => {
                 e.stopPropagation()
                 onPriorChange(id, 'up')
               }}/></div>
-              <div><Icon type="caret-down" onClick={(e)=>{
+              <div><Icon className="prior_down" type="caret-down" onClick={(e)=>{
                 e.stopPropagation()
                 onPriorChange(id, 'down')
               }}/></div>

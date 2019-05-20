@@ -25,7 +25,7 @@ class App extends Component {
   }
 
   render() {
-    console.log('App render')
+    console.log('App render',this.state.token)
     const {token, userName, has_token} = this.state
     const {callbackFromApp} = this
     
@@ -37,7 +37,7 @@ class App extends Component {
                   callbackFromApp={callbackFromApp} />
           <Switch>
             <Route 
-              exact path="/" 
+              exact path="/todos" 
               render={props=>
                 <TodoList 
                   userName={userName} 
@@ -46,16 +46,6 @@ class App extends Component {
                 />}
             />
             <Route path="/join" component={Join}/>
-            {/* <Route 
-              path="/login" 
-              render={props=>
-                <Login 
-                  userName={userName} 
-                  has_token={has_token} 
-                  token={token} 
-                  callbackFromApp={callbackFromApp}
-                />}
-            /> */}
           </Switch>
       </Router>
     )

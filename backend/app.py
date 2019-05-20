@@ -17,26 +17,11 @@ cors = CORS(app)
 api = Api(app)
 db.init_app(app)
 
-api.add_resource(Users,
-                 '/users/')
-                 # , '/users/<string:id>'
-                 # , '/users/join'
-                 # )
+# api.add_resource(Users, '/users/')
 
-# user_view = Users.as_view('users')
-# app.add_url_rule('/users/', view_func=user_view, methods=['GET', 'POST'])
-# app.add_url_rule('/users/', view_func=user_view, methods=['',])
-# app.add_url_rule('/users/', view_func=user_view, methods=['GET',])
-
-
-# api.add_resource(Todos
-#                  , '/todos'
-#                  , '/todos/<string:public_id>'
-#                  )
-api.add_resource(Todos,'/')
+api.add_resource(Todos, '/todos')
 
 api.add_resource(Auth, '/login/')
-# api.add_resource(Join, '/join')
 
 if __name__ == '__main__':
     with app.app_context():

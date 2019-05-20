@@ -20,9 +20,9 @@ class TodoList extends Component{
       put_id:null,
       put_deadLineCheck: false,
       put_deadLine: null,
-      userName: props.userName,
-      has_token: props.has_token,
-      token: props.token,
+      // userName: props.userName,
+      // has_token: props.has_token,
+      // token: props.token,
     }
   }
 
@@ -40,13 +40,13 @@ class TodoList extends Component{
   }
 
   componentDidMount = () => { // 비동기로 TodoList.state.todos의 데이터를 가져와서 다시 렌더링
-    const {token} = this.state
-    console.log('componentDidMount token:',token)
-    fetch("http://0.0.0.0:5000/", {
+    console.log('componentDidMount token:',this.props.token)
+    if(this.props.token===null){return}
+    fetch("http://0.0.0.0:5000/todos", {
       method: 'GET',
       headers: { 
         'Content-Type': 'application/json', 
-        'Authorization' : token
+        'Authorization' : this.props.token
       }
     })
       .then(util.handleResponse)
@@ -104,17 +104,17 @@ class TodoList extends Component{
   }
 
   handleCreate = () => {
-    const {input_title, input_content, input_deadLine, deadLineCheck, token} = this.state
+    const {input_title, input_content, input_deadLine, deadLineCheck} = this.state
+    
     // 마감 기한 오류 검사
     let confirm_deadLine = input_deadLine
     if(!deadLineCheck){confirm_deadLine = null}
-    else{confirm_deadLine = new Date()}
 
-    fetch('http://0.0.0.0:5000/', {
+    fetch('http://0.0.0.0:5000/todos', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json', 
-        'Authorization' : token
+        'Authorization' : this.props.token
       },
       body: JSON.stringify({
         title: input_title,
@@ -139,11 +139,12 @@ class TodoList extends Component{
 
   handleToggle = (id) => { // TodoItem의 완료여부를 수정
     const {todos} = this.state
-    fetch('http://0.0.0.0:5000/', {
+    const {token} = this.props
+    fetch('http://0.0.0.0:5000/todos', {
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json', 
-        'Authorization' : this.state.token
+        'Authorization' : token
       },
       body: JSON.stringify({
         id: id
@@ -167,11 +168,12 @@ class TodoList extends Component{
 
   handleRemove = (id) => { // TodoItem의 삭제
     const {todos} = this.state;
-    fetch('http://0.0.0.0:5000/', {
+    const {token} = this.props
+    fetch('http://0.0.0.0:5000/todos', {
       method: 'DELETE',
       headers: { 
         'Content-Type': 'application/json', 
-        'Authorization' : this.state.token
+        'Authorization' : token
       },
       body: JSON.stringify({
         id: id
@@ -228,16 +230,18 @@ class TodoList extends Component{
 
   handleUpdate = () => {
     const {put_id, put_title, put_content, put_deadLine, put_deadLineCheck} = this.state
+    const {token} = this.props
+    
     // 마감기한 오류 검사
     let confirm_deadLine = put_deadLine
     if(!put_deadLineCheck){confirm_deadLine = null}
     else{confirm_deadLine = (put_deadLine === null ? new Date() : put_deadLine)}
     
-    fetch('http://0.0.0.0:5000/', {
+    fetch('http://0.0.0.0:5000/todos', {
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json', 
-        'Authorization' : this.state.token
+        'Authorization' : token
       },
       body: JSON.stringify({
         id: put_id,
@@ -262,11 +266,11 @@ class TodoList extends Component{
 
   handlePriorChange=(id,dir) => {
     console.log('handlePriorChange')
-    fetch('http://0.0.0.0:5000/', {
+    fetch('http://0.0.0.0:5000/todos', {
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json', 
-        'Authorization' : this.state.token
+        'Authorization' : this.props.token
       },
       body: JSON.stringify({
         id: id,
@@ -287,7 +291,7 @@ class TodoList extends Component{
 
   render(){
     const {input_title, input_content, deadLineCheck, todos, put_title, put_content, put_deadLine
-      ,put_deadLineCheck} = this.state;
+      ,put_deadLineCheck} = this.state
     const {
       handleSetMode,
       handleFormChange,
@@ -299,7 +303,7 @@ class TodoList extends Component{
       deadLineCallback,
       handleDeadLineOn,
       handlePriorChange,
-    } = this;
+    } = this
     
     return (
       <div>
