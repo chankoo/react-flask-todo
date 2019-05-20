@@ -42,7 +42,7 @@ class TodoList extends Component{
   componentDidMount = () => { // 비동기로 TodoList.state.todos의 데이터를 가져와서 다시 렌더링
     console.log('componentDidMount token:',this.props.token)
     if(this.props.token===null){return}
-    fetch("http://0.0.0.0:5000/todos", {
+    fetch("http://0.0.0.0:5001/todos", {
       method: 'GET',
       headers: { 
         'Content-Type': 'application/json', 
@@ -110,7 +110,7 @@ class TodoList extends Component{
     let confirm_deadLine = input_deadLine
     if(!deadLineCheck){confirm_deadLine = null}
 
-    fetch('http://0.0.0.0:5000/todos', {
+    fetch('http://0.0.0.0:5001/todos', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json', 
@@ -140,7 +140,7 @@ class TodoList extends Component{
   handleToggle = (id) => { // TodoItem의 완료여부를 수정
     const {todos} = this.state
     const {token} = this.props
-    fetch('http://0.0.0.0:5000/todos', {
+    fetch('http://0.0.0.0:5001/todos', {
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json', 
@@ -169,7 +169,7 @@ class TodoList extends Component{
   handleRemove = (id) => { // TodoItem의 삭제
     const {todos} = this.state;
     const {token} = this.props
-    fetch('http://0.0.0.0:5000/todos', {
+    fetch('http://0.0.0.0:5001/todos', {
       method: 'DELETE',
       headers: { 
         'Content-Type': 'application/json', 
@@ -237,7 +237,7 @@ class TodoList extends Component{
     if(!put_deadLineCheck){confirm_deadLine = null}
     else{confirm_deadLine = (put_deadLine === null ? new Date() : put_deadLine)}
     
-    fetch('http://0.0.0.0:5000/todos', {
+    fetch('http://0.0.0.0:5001/todos', {
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json', 
@@ -266,7 +266,7 @@ class TodoList extends Component{
 
   handlePriorChange=(id,dir) => {
     console.log('handlePriorChange')
-    fetch('http://0.0.0.0:5000/todos', {
+    fetch('http://0.0.0.0:5001/todos', {
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json', 

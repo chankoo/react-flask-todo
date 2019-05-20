@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+// import { Redirect } from 'react-router-dom';
 import * as util from '../utils';
 import './Join.css';
 
@@ -21,7 +21,7 @@ class Join extends Component{
     handleJoin=()=>{
         console.log("handleJoin")
         const {input_userName, input_pwd} = this.state
-        fetch('http://0.0.0.0:5000/users/', {
+        fetch('http://0.0.0.0:5001/users/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
