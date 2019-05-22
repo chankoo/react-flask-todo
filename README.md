@@ -20,15 +20,8 @@
 ![스크린샷, 2019-05-22 11-26-16](https://user-images.githubusercontent.com/38183218/58143134-ac509400-7c84-11e9-9fbd-9b2a315c732e.png)
 
 ## 환경 설정 및 빌드
-### python
 
-```
-sudo apt-get install python3-pip
-pip3 install virtualenv
-```
-
-
-### npm
+### npm 설치
 ```
 curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
 sudo apt-get install -y nodejs
@@ -37,36 +30,26 @@ sudo npm install -g n
 sudo n stable
 ```
 
-### 설정
+### 빌드
 ```
 git clone https://github.com/chankoo/react-flask-todo.git
-cd react-flask-todo/backend
-virtualenv venv
-source venv/bin/activate
-pip3 install -r requirements.txt
-```
 
-```
-nohup python app.py runserver &
-```
-
-```
 cd ~/react-flask-todo/react-todo
 sudo npm install production
-sudo npm start
+sudo npm run build
+sudo npm install -g serve
+sudo serve -s build
 ```
 
-<!-- sudo npm run build
-sudo npm install -g serve
-sudo serve -s build -->
 
 ### 실행
 
-http://localhost:3000/
+http://localhost:5000/
+
 
 ## 테스트
 
-http://54.180.88.196:3000
+http://54.180.88.196:5000
 
 
 
