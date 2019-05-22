@@ -12,7 +12,8 @@ class TodoItem extends Component {
   render() {
     const { title, content, checked, id, deadLine, onToggle, onRemove, onUpdateMode, onPriorChange } = this.props;
     return (
-      <div className="todo-item" onClick={() => onToggle(id)}>
+      <div className="todo-item" onClick={() =>
+        onToggle(id)}>
         <div className="remove" onClick={(e) => {
           e.stopPropagation(); // 부모의 이벤트인 onToggle 이 실행되지 않도록 함
           onRemove(id)}
