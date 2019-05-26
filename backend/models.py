@@ -8,25 +8,16 @@ db = SQLAlchemy()
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    # public_id = db.Column(db.String(50), unique=True)
     name = db.Column(db.String(50))
     password = db.Column(db.String(80))
-    # admin = db.Column(db.Boolean)
 
-    def __init__(self
-                 # , public_id
-                 , name, password):
-                 # , admin=False):
-
-        # self.public_id = public_id
+    def __init__(self, name, password):
         self.name = name
         self.password = password
-        # self.admin = admin
 
     def serialize(self):
         return json.dumps({
             'id': self.id,
-            # 'public_id': self.public_id,
             'name': self.name,
             'password': self.password,
         })
@@ -74,20 +65,3 @@ class Todo(db.Model):
             'checked': self.checked,
             'priority': self.priority
         })
-
-
-# class TodoList(db.Model):
-#     __tablename__ = 'todo_list'
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-#
-#     user = relationship('User', backref=backref('todo_list', order_by=id))
-#
-#     def __init__(self, user_id):
-#         self.user_id = user_id
-#
-#     def serialize(self):
-#         return json.dumps({
-#             'id': self.id,
-#             'user_id': self.user_id,
-#         })
