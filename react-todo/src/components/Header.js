@@ -26,7 +26,7 @@ class Header extends Component {
         const {input_userName, input_pwd} = this.state
         const {callbackFromApp} = this.props
 
-        fetch('http://0.0.0.0:80/login/', {
+        fetch('http://54.180.24.136:80/login/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

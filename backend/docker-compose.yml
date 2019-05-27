@@ -4,6 +4,7 @@ services:
   flask:
     build: ./flask
     container_name: flask
+    restart: always
     environment:
       - APP_NAME=MyFlaskApp
     expose:
