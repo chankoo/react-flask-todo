@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "antd": "^3.18.1",
+    "production": "0.0.2",
     "react": "^16.8.6",
     "react-datepicker": "^2.5.0",
     "react-dom": "^16.8.6",
