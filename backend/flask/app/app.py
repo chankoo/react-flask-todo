@@ -18,6 +18,10 @@ cors = CORS(application)
 api = Api(application)
 db.init_app(application)
 
+with application.app_context():
+    db.create_all()
+
+
 api.add_resource(Users, '/users')
 
 api.add_resource(Todos, '/todos')
@@ -25,6 +29,4 @@ api.add_resource(Todos, '/todos')
 api.add_resource(Auth, '/login')
 
 if __name__ == '__main__':
-    with application.app_context():
-        db.create_all()
     application.run(host='0.0.0.0', port=5000, debug=True)

@@ -43,7 +43,7 @@ sudo n stable
 ```sh
 git clone https://github.com/chankoo/react-flask-todo.git
 
-cd ~/react-flask-todo/react-todo
+cd ./react-flask-todo/react-todo
 sudo npm install production
 sudo npm run build
 sudo npm install -g serve
